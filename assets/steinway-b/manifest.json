@@ -1,0 +1,186 @@
+{
+  "license": "CC0-1.0",
+  "source": "https://github.com/StanislavMakhnytskyi/stapiano-samples/tree/main/steinway-b",
+  "samples": {
+    "24": {
+      "bytes": 122875,
+      "sha256": "622e6f5598e52718a20e93489a79c314cd37220dc079f608959a3eefa7fbf590",
+      "from": "StaPiano medium layer"
+    },
+    "26": {
+      "bytes": 122786,
+      "sha256": "52b9b781f03c85cb47cce83c21a9dde373fda618877387177eda7334e8d30314",
+      "from": "StaPiano medium layer"
+    },
+    "28": {
+      "bytes": 122896,
+      "sha256": "de8ec485d2c061c3d1bd0aba26a89b24ef86db5c3519f1815101bf3df1de4c38",
+      "from": "StaPiano medium layer"
+    },
+    "30": {
+      "bytes": 122932,
+      "sha256": "fa192d89a0877f9917773c00bf76ea71b88edba4d1bee08423319a91f81f5fde",
+      "from": "StaPiano medium layer"
+    },
+    "32": {
+      "bytes": 122906,
+      "sha256": "5e4475c0b5f9758e22c18c0af371b98ce8f4353d20b3a1ea3229030601bedf58",
+      "from": "StaPiano medium layer"
+    },
+    "34": {
+      "bytes": 122966,
+      "sha256": "954a43fb52261d8a4d47c57227948546979f650ba7705c9d79b9f24952b4ead8",
+      "from": "StaPiano medium layer"
+    },
+    "36": {
+      "bytes": 122868,
+      "sha256": "8d622bbcfc61f1d90ba49e911518213d61385eaf3d5428bb901892fa31a1452f",
+      "from": "StaPiano medium layer"
+    },
+    "38": {
+      "bytes": 122905,
+      "sha256": "0447358f5a5eeb7051c3e9497f589925797914ce4d472be3051641fcb790df26",
+      "from": "StaPiano medium layer"
+    },
+    "40": {
+      "bytes": 122926,
+      "sha256": "e568a7fb468f3e9a665cb875200ef22c2f6cb89aa46bf62e58617401a78e04c3",
+      "from": "StaPiano medium layer"
+    },
+    "42": {
+      "bytes": 13929,
+      "sha256": "64ac4db356a397765630c7c5efbdf74c21219a30403a4ee54adff9d314b7b516",
+      "from": "existing interval prototype"
+    },
+    "44": {
+      "bytes": 13965,
+      "sha256": "6bf967355257fe2bef330c9d186d2b9be0e477849c558dc1d095c6cb98f84a01",
+      "from": "existing interval prototype"
+    },
+    "46": {
+      "bytes": 13928,
+      "sha256": "2ac5fe6677d85ac71b4cec76f17b19658eb0f1405451c1f01537488dbf8b062d",
+      "from": "existing interval prototype"
+    },
+    "48": {
+      "bytes": 13912,
+      "sha256": "6cc1c220ebe8e9360eb424d671b762150ebd5c4a44cd08c0a5a1e476ea0003a4",
+      "from": "existing interval prototype"
+    },
+    "50": {
+      "bytes": 13925,
+      "sha256": "8906a8f76e757d8bb3f23d831dc573c92befd2f7bb64cc29c66b5718ec44642c",
+      "from": "existing interval prototype"
+    },
+    "52": {
+      "bytes": 13963,
+      "sha256": "4cdf7af12c05b516d700dfda9d2f15ebdd3d8c041858cea904bb82e2eb9386b6",
+      "from": "existing interval prototype"
+    },
+    "54": {
+      "bytes": 13911,
+      "sha256": "e2db958575b285527081b39dc26d76084241fe43ba489bed393fe028f0d635e5",
+      "from": "existing interval prototype"
+    },
+    "56": {
+      "bytes": 13990,
+      "sha256": "6789236264bd94edf45306aad78146b1e82c9435c2e0ba3cd7e02891fc640590",
+      "from": "existing interval prototype"
+    },
+    "58": {
+      "bytes": 13939,
+      "sha256": "8ca1932a1051c976b2df68eb31c38de1e9a0bb4098e61fea73e2b85688a0a6a6",
+      "from": "existing interval prototype"
+    },
+    "60": {
+      "bytes": 13877,
+      "sha256": "033c82922bee1cc0a9f326a573a28acb1a4ef5f9040b4541eb335e5cff23e0cf",
+      "from": "existing interval prototype"
+    },
+    "62": {
+      "bytes": 13926,
+      "sha256": "b8c3cf7514d9314ddbc46aaebb751280f53ea52174ecbd2a7691a537ccc6cf38",
+      "from": "existing interval prototype"
+    },
+    "64": {
+      "bytes": 14012,
+      "sha256": "cd21629d9bdcf0065fce04ff1f86d4e596600e29407f8e2f995f58f382048dd5",
+      "from": "existing interval prototype"
+    },
+    "66": {
+      "bytes": 13887,
+      "sha256": "ffc1a09670356f2803e641693b19d021cff72fdcf372e6d462ac02dea5b729ac",
+      "from": "existing interval prototype"
+    },
+    "68": {
+      "bytes": 13970,
+      "sha256": "5a61c0710a6cf6f0862d6002ab1ecb107e0ca91abab6f5195a3b17a8f5f057ca",
+      "from": "existing interval prototype"
+    },
+    "70": {
+      "bytes": 13987,
+      "sha256": "08a678ba7da0b8b3738a9622adba49bb3b2a24b125a8b9c85c0aadd53fd43e56",
+      "from": "existing interval prototype"
+    },
+    "72": {
+      "bytes": 14012,
+      "sha256": "317dcd20af72f27640bb03bad957e3cf35c71431205e21980067702dd221d659",
+      "from": "existing interval prototype"
+    },
+    "74": {
+      "bytes": 14003,
+      "sha256": "d661f538f75c114da7cd9b5aa6d60d78b94cccce7e2f97d93d045d84cc62e10d",
+      "from": "existing interval prototype"
+    },
+    "76": {
+      "bytes": 13979,
+      "sha256": "2f2ace0c69e9b8f143d636ac02e153a70a7642bf542bf123a7f6afd3f196ce65",
+      "from": "existing interval prototype"
+    },
+    "78": {
+      "bytes": 14019,
+      "sha256": "b5bde4fcb7a341cd906677c09fad44e492331147c4ed2da3801bd0454146117e",
+      "from": "existing interval prototype"
+    },
+    "80": {
+      "bytes": 122700,
+      "sha256": "8cb460ab7aa70e40db7f65e820ffec28318a1556b8104992e62c0c09b4bcf46f",
+      "from": "StaPiano medium layer"
+    },
+    "82": {
+      "bytes": 122490,
+      "sha256": "8cd8ee9d12c3ebd69549e0bfdb9b38b1cbf307342414c0d63910fd1b550c65c5",
+      "from": "StaPiano medium layer"
+    },
+    "84": {
+      "bytes": 106404,
+      "sha256": "5ace03b5b83fdf378a21d3e2098564da208abd16419a322010369d1ac1b05a65",
+      "from": "StaPiano medium layer"
+    },
+    "86": {
+      "bytes": 113177,
+      "sha256": "a58d1c6df49ec0fcb86a4c1590e7122fb21d156eacc5c34957be85408a890b91",
+      "from": "StaPiano medium layer"
+    },
+    "88": {
+      "bytes": 76139,
+      "sha256": "f16765f9fa589b1058553765e566db39839ce9e5c5b2112981067345a9af2fee",
+      "from": "StaPiano medium layer"
+    },
+    "90": {
+      "bytes": 49064,
+      "sha256": "c825650b915519e240bf15dc189a4f01408e08f10ef6c0a6796efab857b45038",
+      "from": "StaPiano medium layer"
+    },
+    "92": {
+      "bytes": 52057,
+      "sha256": "aff911c6103d6eaaa70a619baef70a9f7771060088b4ffae879368367f8c8dd8",
+      "from": "StaPiano medium layer"
+    },
+    "94": {
+      "bytes": 34457,
+      "sha256": "5d53c03355f8ea05f7c138fe0c18c079ec38de3dbb9ad4dec9d36991254d925e",
+      "from": "StaPiano medium layer"
+    }
+  }
+}

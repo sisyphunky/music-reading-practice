@@ -1,0 +1,3 @@
+# Versilian Steinway B
+
+These recordings are the close-microphone, no-sustain-pedal Steinway B from [Versilian Community Sample Library](https://versilian-studios.com/vcsl/), released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). The compressed mono AAC medium layer (`v2`) was sourced from [StaPiano](https://github.com/StanislavMakhnytskyi/stapiano-samples/tree/main/steinway-b). Notes already embedded in the prior interval prototype reuse that prototype's AAC excerpts of the same layer. The manifest records the origin and SHA-256 for each file. At playback, this prototype plays 0.90 seconds per note, fades out over 0.07 seconds, and transposes from the nearest lower recording where needed.
