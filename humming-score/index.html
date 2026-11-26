@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f5f0e6">
+<meta name="description" content="哼唱短旋律，在钢琴上回听并整理为五线谱。">
+<title>旋律速记 · 音感练习</title>
+<style>
+:root {
+  color-scheme: light;
+  --canvas: #e7e4de;
+  --paper: #f5f0e6;
+  --page: #fbf8f2;
+  --ink: #27231e;
+  --muted: #70685e;
+  --line: #d9d0c2;
+  --control: #9b9081;
+  --wash: #ede6da;
+  --blue: #28588a;
+  --bluewash: #e8edf0;
+  --red: #a3412f;
+  --serif: Georgia, "Songti SC", "STSong", SimSun, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 14px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button:disabled { cursor: default; opacity: .46; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.shell { max-width: 500px; min-height: calc(100svh - 48px); margin: 24px auto; padding: 0 24px 22px; background: var(--paper); border: 1px solid #c9c0b1; border-radius: 10px; box-shadow: 0 14px 44px #332b1e12; }
+.header { min-height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; font: 600 17px var(--serif); letter-spacing: .1em; }
+.brand-mark { display: grid; place-items: center; width: 23px; height: 25px; border: 1px solid var(--ink); font: 17px Georgia, serif; }
+.btn, .quiet, .mode { min-height: 44px; padding: 8px 13px; border-radius: 3px; font-weight: 500; line-height: 1.35; }
+.btn { border: 1px solid var(--control); background: transparent; }
+.btn:hover:not(:disabled), .quiet:hover:not(:disabled), .mode:hover:not(:disabled) { background: var(--wash); }
+.quiet { border: 1px solid transparent; background: transparent; color: var(--blue); }
+.intro { padding: 22px 0 17px; }
+.intro h1 { margin: 0 0 6px; font: 600 clamp(27px, 7vw, 32px)/1.25 var(--serif); letter-spacing: .055em; }
+.intro p, .muted { color: var(--muted); margin: 0; }
+.recorder { padding: 13px 0 8px; border-top: 3px double var(--ink); border-bottom: 1px solid var(--line); }
+.toprow, .actions, .play, .edit-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.toprow { justify-content: space-between; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mode { border: 1px solid var(--control); background: transparent; font-size: 13px; padding-inline: 10px; }
+.mode[aria-pressed=true] { background: var(--bluewash); border-color: var(--blue); color: var(--blue); font-weight: 650; }
+.speed { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
+.speed input { min-height: 44px; width: 53px; padding: 3px; border-radius: 3px; border: 1px solid var(--control); background: var(--page); color: var(--ink); text-align: center; }
+.record-center { display: grid; justify-items: stretch; gap: 8px; padding: 15px 0 4px; }
+.meter { display: none; height: 22px; align-items: center; justify-content: center; gap: 4px; overflow: hidden; }
+.recording .meter { display: flex; }
+.meter span { width: 2px; height: calc(var(--h) * .35px); background: var(--red); transform: scaleY(var(--level, 1)); }
+.record { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; width: 100%; padding: 10px 16px; border: 1px solid var(--ink); border-radius: 3px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 620; }
+.record:hover:not(:disabled), .primary:hover:not(:disabled) { background: #3c352c; color: var(--paper); }
+.record .dot { display: block; width: 8px; height: 8px; border-radius: 50%; background: #e4b4a7; }
+.recording .record .dot { border-radius: 1px; }
+.beat { min-height: 21px; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); text-align: center; }
+.rec-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 8px; }
+.rec-bottom .quiet { padding-inline: 5px; font-size: 12px; }
+.note, .version { font-size: 11px; color: var(--muted); }
+.notice { margin: 8px 0 0; color: var(--blue); font-size: 12px; }
+.notice:empty { display: none; }
+.notice[data-kind=warn] { color: var(--red); }
+.card { margin-top: 17px; padding: 12px 0 0; border-top: 3px double var(--ink); }
+.cardhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 9px; margin-bottom: 10px; }
+.card h2, .dialog-inner h2 { margin: 0; font: 600 19px/1.35 var(--serif); letter-spacing: .035em; }
+.card p { margin: 3px 0 0; font-size: 12px; }
+.score-frame { position: relative; margin: 9px 0 10px; overflow: hidden; border-bottom: 1px solid var(--ink); background: var(--page); }
+.score-frame canvas { display: block; width: 100%; }
+.targets { position: absolute; inset: 0; pointer-events: none; }
+.notetarget { position: absolute; width: 32px; height: 40px; transform: translate(-50%, -50%); padding: 0; border: 0; border-radius: 3px; background: transparent; pointer-events: auto; }
+.notetarget:hover { background: #28588a20; }
+.play .btn { font-size: 13px; padding-inline: 10px; }
+.player[aria-pressed=true] { border-color: var(--blue); background: var(--bluewash); color: var(--blue); }
+.grow { flex: 1; }
+.side-tools { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 7px; }
+.primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.editor { margin-top: 8px; padding: 9px 0 12px; border-bottom: 1px solid var(--line); }
+.editor-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.editor-top strong { color: var(--blue); font: italic 27px/1 Georgia, serif; }
+.editor-top .quiet { padding-inline: 4px; font-size: 12px; }
+.edit-buttons { gap: 6px; }
+.edit-buttons .btn { min-height: 44px; padding: 6px 9px; font-size: 12px; }
+.keys { position: relative; display: flex; height: 78px; margin-bottom: 10px; overflow: hidden; border-top: 3px solid var(--ink); }
+.key { display: flex; align-items: flex-end; justify-content: center; flex: 1; min-width: 0; padding: 0 0 5px; border: 1px solid #5b5144; border-left: 0; border-top: 0; border-radius: 0 0 3px 3px; background: #fcf9f1; font: italic 13px Georgia, serif; }
+.key:first-child { border-left: 1px solid #5b5144; }
+.key.black { position: absolute; top: 0; z-index: 1; width: 8.8%; height: 47px; padding-bottom: 4px; border-color: var(--ink); background: var(--ink); color: var(--page); font-size: 11px; }
+.key.current { border-color: var(--blue); background: var(--blue); color: white; }
+.key:active { filter: brightness(.85); }
+.sticky { margin-top: 12px; }
+.version { margin: 17px 0 0; text-align: center; }
+dialog { width: min(450px, calc(100% - 28px)); max-height: 85vh; overflow: auto; padding: 0; border: 1px solid var(--control); border-radius: 3px; color: var(--ink); background: var(--paper); }
+dialog::backdrop { background: #27231e67; }
+.dialog-inner { padding: 16px; }
+.dialog-inner form > label { display: block; margin: 10px 0 5px; }
+.dialog-inner input[type=text] { width: 100%; padding: 9px; border: 1px solid var(--control); border-radius: 3px; background: var(--page); }
+.dialog-inner form .actions { margin-top: 12px; }
+.saved-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.saved-row strong, .saved-row small { display: block; }
+.saved-row strong { overflow-wrap: anywhere; }
+.saved-row .grow { min-width: 105px; }
+.saved-row small { color: var(--muted); }
+@media (max-width: 550px) {
+  body { background: var(--paper); }
+  .shell { min-height: 100svh; margin: 0 auto; padding: env(safe-area-inset-top) max(17px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(17px, env(safe-area-inset-left)); border: 0; border-radius: 0; box-shadow: none; }
+  .header { min-height: 58px; }
+}
+@media print {
+  body, .shell, .card, .score-frame { background: white; margin: 0; padding: 0; max-width: none; min-height: 0; border: 0; box-shadow: none; }
+  .header, .intro, .recorder, .notice, .play, .editor, .sticky, .version, dialog, .targets { display: none !important; }
+  .card { display: block; }
+  .score-frame { overflow: visible; }
+  .score-frame canvas { width: 100%; object-fit: contain; }
+  .cardhead { margin-bottom: 10mm; }
+  @page { size: auto; margin: 16mm; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="header"><div class="brand"><span class="brand-mark" aria-hidden="true">♪</span>音感练习</div><button class="quiet" id="libraryButton" type="button">我的旋律</button></header>
+<section class="intro"><h1>旋律速记</h1><p>哼一小句，用钢琴回听，再把它写成五线谱。</p></section>
+<section class="recorder" id="recorder" aria-label="录音">
+<div class="toprow"><div class="modes" role="group" aria-label="录音方式"><button type="button" class="mode" id="freeMode" aria-pressed="true">自由哼唱</button><button type="button" class="mode" id="beatMode" aria-pressed="false">跟拍练习</button></div>
+<label class="speed" id="speedBox" hidden>速度 <input type="number" id="speed" min="45" max="180" value="84" aria-label="速度，每分钟拍数"> 拍/分</label></div>
+<div class="record-center"><div class="meter" aria-hidden="true"><span style="--h:10"></span><span style="--h:17"></span><span style="--h:26"></span><span style="--h:15"></span><span style="--h:34"></span><span style="--h:23"></span><span style="--h:39"></span><span style="--h:27"></span><span style="--h:17"></span><span style="--h:26"></span><span style="--h:13"></span><span style="--h:8"></span></div>
+<button class="record" id="recordButton" type="button"><span class="dot" aria-hidden="true"></span><span id="recordText">开始录音</span></button>
+<div class="beat" id="beat">在安静处哼 5–10 秒</div></div>
+<div class="rec-bottom"><span class="note">录音和识别在本机完成</span><div><button type="button" class="quiet" id="importButton">打开录音</button><button type="button" class="quiet" id="exampleButton">试听示例</button></div></div>
+<input type="file" id="audioFile" accept="audio/*,.m4a,.wav,.mp3,.opus,.ogg,.webm,.aac,.mp4" hidden>
+</section>
+<p class="notice" id="notice" role="status" aria-live="polite"></p>
+<section class="card" id="project" hidden aria-label="旋律五线谱">
+<div class="cardhead"><div><h2 id="scoreTitle">旋律草谱</h2><p class="muted" id="summary"></p></div></div>
+<div class="play"><button class="btn player" id="playOriginal" aria-pressed="false" type="button">▷ 原始哼唱</button><button class="btn player" id="playPiano" aria-pressed="false" type="button">▷ 钢琴复奏</button>
+<button class="quiet" id="undoButton" type="button" disabled>撤销修改</button></div>
+<div class="score-frame" id="scoreFrame"><canvas id="score" aria-label="单声部五线谱"></canvas><div class="targets" id="targets" aria-label="选择谱面音符"></div></div>
+<section class="editor" id="editor" hidden aria-label="编辑音符">
+<div class="editor-top"><div><strong id="chosenName"></strong> <span class="muted" id="chosenDuration"></span></div><button class="quiet" id="clipButton" type="button">听原录音这一音</button></div>
+<div class="keys" id="keys" aria-label="琴键"></div>
+<div class="edit-buttons">
+<button class="btn" id="down" type="button">降半音</button><button class="btn" id="up" type="button">升半音</button>
+<button class="btn" id="shorten" type="button">缩短</button><button class="btn" id="lengthen" type="button">延长</button>
+<button class="btn" id="split" type="button">拆成两音</button><button class="btn" id="merge" type="button">合并后一音</button>
+<button class="btn" id="rest" type="button">改为休止</button><button class="btn" id="remove" type="button">删除</button>
+</div>
+</section>
+<div class="side-tools sticky"><div class="actions"><button class="btn" id="printButton" type="button">打印 / PDF</button><button class="quiet" id="downloadButton" type="button">下载录音</button></div><button class="btn primary" id="saveButton" type="button">保存旋律</button></div>
+</section>
+<p class="version">旋律速记 0.2.0</p>
+</main>
+<dialog id="saveDialog" aria-labelledby="saveHeading"><div class="dialog-inner"><form id="saveForm"><h2 id="saveHeading">保存旋律</h2><label for="name">名称</label><input id="name" type="text" maxlength="55" required autocomplete="off"><label id="keepLabel"><input type="checkbox" id="keepAudio" checked> 保留原始录音</label><div class="actions"><button class="btn primary" id="commitButton" type="submit">保存</button><button class="quiet" id="cancelSave" type="button">取消</button></div></form></div></dialog>
+<dialog id="libraryDialog" aria-labelledby="libraryHeading"><div class="dialog-inner"><div class="cardhead"><h2 id="libraryHeading">我的旋律</h2><button class="quiet" id="closeLibrary" type="button">关闭</button></div><div id="savedList"></div></div></dialog>
+<script id="analysis-core">
+'use strict';
+
+const EXAMPLE_TEMPO = 84;
+const PITCH_NAMES = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const DIATONIC_STEPS = [0,0,1,1,2,3,3,4,4,5,5,6];
+const noteName = midi => midi === null ? '休止' : PITCH_NAMES[midi % 12] + (Math.floor(midi / 12) - 1);
+const diatonic = midi => Math.floor(midi / 12) * 7 + DIATONIC_STEPS[midi % 12];
+const midiHz = midi => 440 * 2 ** ((midi - 69) / 12);
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+function findPitch(samples, from, size, rate, curve) {
+  const searchStart = Math.floor(rate / 1150);
+  const searchEnd = Math.ceil(rate / 64);
+  const count = size - searchEnd;
+  let peak = 0;
+  let power = 0;
+  for (let i = 0; i < size; i++) {
+    const value = samples[from + i] || 0;
+    power += value * value;
+    peak = Math.max(peak, Math.abs(value));
+  }
+  const rms = Math.sqrt(power / size);
+  if (peak < 0.0025 || rms < 0.001) return { pitch:null, rms };
+  let total = 0;
+  let best = searchStart;
+  for (let k = 1; k <= searchEnd; k++) {
+    let delta = 0;
+    for (let i = 0; i < count; i++) {
+      const difference = (samples[from + i] || 0) - (samples[from + i + k] || 0);
+      delta += difference * difference;
+    }
+    total += delta;
+    curve[k] = total > 0 ? delta * k / total : 1;
+    if (k >= searchStart && curve[k] < curve[best]) best = k;
+  }
+  for (let k = searchStart + 1; k < searchEnd; k++) {
+    if (curve[k] <= curve[k - 1] && curve[k] <= curve[k + 1] && curve[k] < 0.18) {
+      best = k;
+      break;
+    }
+  }
+  if (curve[best] > 0.29 || best >= searchEnd) return { pitch:null, rms };
+  const left = curve[best - 1];
+  const middle = curve[best];
+  const right = curve[best + 1];
+  const curvature = left - 2 * middle + right;
+  const fine = curvature ? clamp((left - right) / (2 * curvature), -0.5, 0.5) : 0;
+  return { pitch:69 + 12 * Math.log2(rate / ((best + fine) * 440)), rms };
+}
+
+function detectMelody(channel, sampleRate) {
+  const stride = Math.max(1, Math.round(sampleRate / 11500));
+  const rate = sampleRate / stride;
+  const data = new Float32Array(Math.floor(channel.length / stride));
+  for (let i = 0; i < data.length; i++) {
+    let value = 0;
+    for (let j = 0; j < stride; j++) value += channel[i * stride + j];
+    data[i] = value / stride;
+  }
+  const hop = Math.round(rate * 0.012);
+  const windowSize = Math.round(rate * 0.048);
+  const curve = new Float32Array(Math.ceil(rate / 64) + 1);
+  const frames = [];
+  let loudest = 0;
+  for (let index = 0; index < data.length; index += hop) {
+    const frame = findPitch(data, index - Math.floor(windowSize / 2), windowSize, rate, curve);
+    loudest = Math.max(loudest, frame.rms);
+    frames.push(frame);
+  }
+  const gate = Math.max(0.0014, loudest * 0.06);
+  const labels = frames.map((frame, index) => {
+    if (frame.pitch === null || frame.rms < gate) return null;
+    const nearby = frames.slice(Math.max(0, index - 2), index + 3)
+      .filter(item => item.pitch !== null && item.rms >= gate).map(item => item.pitch).sort((a,b) => a - b);
+    return Math.round(nearby[Math.floor(nearby.length / 2)]);
+  });
+  const groups = [];
+  let prev = null;
+  for (let index = 0; index < labels.length; index++) {
+    const midi = labels[index];
+    if (!prev || prev.midi !== midi) {
+      prev = {midi, start:index, end:index + 1};
+      groups.push(prev);
+    } else {
+      prev.end = index + 1;
+    }
+  }
+
+  const runs = [];
+  for (const group of groups) {
+    if (group.midi === null || group.end - group.start < 5 || group.midi < 35 || group.midi > 89) continue;
+    const previous = runs.at(-1);
+    if (previous && previous.midi === group.midi && group.start - previous.end <= 2) {
+      previous.end = group.end;
+    } else {
+      runs.push({...group});
+    }
+  }
+
+  const withAttacks = [];
+  for (const run of runs) {
+    let start = run.start;
+    for (let i = run.start + 10; i < run.end - 10; i++) {
+      const valley = frames[i].rms;
+      const startsRising = valley <= frames[i - 1].rms && valley < frames[i + 1].rms;
+      if (i - start < 10 || !startsRising) continue;
+      const before = Math.max(...frames.slice(i - 8, i - 2).map(frame => frame.rms));
+      const after = Math.max(...frames.slice(i + 3, i + 9).map(frame => frame.rms));
+      if (valley >= Math.min(before, after) * 0.47 || Math.min(before, after) < gate * 2) continue;
+      withAttacks.push({...run, start, end:i});
+      start = i;
+    }
+    withAttacks.push({...run, start});
+  }
+  return withAttacks.map(run => ({
+    midi:run.midi,
+    from:run.start * hop / rate,
+    to:Math.min(channel.length / sampleRate, run.end * hop / rate)
+  }));
+}
+
+function pickTempo(rawNotes) {
+  if (rawNotes.length < 3) return EXAMPLE_TEMPO;
+  const steps = rawNotes.slice(1).map((note, index) => note.from - rawNotes[index].from);
+  let result = EXAMPLE_TEMPO;
+  let best = Infinity;
+  for (let bpm = 54; bpm <= 142; bpm += 1) {
+    const eighth = 30 / bpm;
+    let loss = 0;
+    for (const step of steps) {
+      const eighths = step / eighth;
+      const units = Math.max(1, Math.round(eighths));
+      loss += Math.min(0.42, (eighths - units) ** 2) + (units % 2 ? 0.026 : 0);
+    }
+    loss = loss / steps.length + 0.014 * Math.log2(bpm / EXAMPLE_TEMPO) ** 2;
+    if (loss < best) {
+      best = loss;
+      result = bpm;
+    }
+  }
+  return result;
+}
+
+function toScore(rawNotes, bpm) {
+  const notes = [];
+  const eighth = 30 / bpm;
+  for (let i = 0; i < rawNotes.length; i++) {
+    const here = rawNotes[i];
+    const next = rawNotes[i + 1];
+    const duration = here.to - here.from;
+    const distance = next ? next.from - here.from : duration;
+    const totalTicks = Math.max(1, Math.round(distance / eighth));
+    const gap = next ? next.from - here.to : 0;
+    const restTicks = gap >= eighth * 0.66 ? clamp(Math.round(gap / eighth), 1, Math.max(1, totalTicks - 1)) : 0;
+    notes.push({...here, ticks:Math.max(1, totalTicks - restTicks)});
+    if (restTicks && totalTicks > 1) notes.push({midi:null, ticks:restTicks, from:here.to, to:next.from});
+  }
+  return notes;
+}
+
+function arraysToWav(samples, sampleRate) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  const writeTag = (at, tag) => { for (let i = 0; i < tag.length; i++) view.setUint8(at + i, tag.charCodeAt(i)); };
+  writeTag(0,'RIFF'); view.setUint32(4, buffer.byteLength - 8, true); writeTag(8,'WAVE');
+  writeTag(12,'fmt '); view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true); view.setUint32(28,sampleRate * 2,true); view.setUint16(32,2,true);
+  view.setUint16(34,16,true); writeTag(36,'data'); view.setUint32(40,samples.length * 2,true);
+  for (let i = 0; i < samples.length; i++) view.setInt16(44 + i * 2, Math.round(clamp(samples[i], -1, 1) * 32767), true);
+  return buffer;
+}
+
+function makeExample() {
+  const sampleRate = 24000;
+  const melody = [
+    {midi:67,time:0.15,length:0.40},{midi:64,time:0.66,length:0.43},{midi:64,time:1.16,length:0.42},
+    {midi:62,time:1.67,length:0.78},{midi:64,time:2.67,length:0.43},{midi:62,time:3.17,length:0.46},
+    {midi:60,time:3.67,length:0.88}
+  ];
+  const samples = new Float32Array(Math.round(sampleRate * 4.75));
+  for (const note of melody) {
+    const offset = Math.round(note.time * sampleRate);
+    let phase = 0;
+    for (let i = 0; i < note.length * sampleRate; i++) {
+      const time = i / sampleRate;
+      const envelope = Math.min(1, time / 0.05, (note.length - time) / 0.09);
+      phase += 2 * Math.PI * midiHz(note.midi) * (1 + 0.006 * Math.sin(time * 31)) / sampleRate;
+      samples[offset + i] = 0.35 * envelope * (0.78 * Math.sin(phase) + 0.11 * Math.sin(2 * phase) + 0.11 * Math.sin(3 * phase));
+    }
+  }
+  return {samples, sampleRate};
+}
+</script>
+<script id="notation">
+const ui = id => document.getElementById(id);
+const scoreCanvas = ui('score');
+const staffFrame = ui('scoreFrame');
+
+function scorePieces(notes) {
+  const pieces = [];
+  let offset = 0;
+  const place = (remaining, midi, index) => {
+    let continued = false;
+    while (remaining > 0) {
+      const room = 8 - offset % 8;
+      const units = Math.min(remaining, room);
+      const ticks = [8,4,2,1].find(size => size <= units);
+      pieces.push({midi, index, offset, ticks, continued});
+      offset += ticks;
+      remaining -= ticks;
+      continued = true;
+    }
+  };
+  notes.forEach((note, index) => place(note.ticks, note.midi, index));
+  if (offset % 8) place(8 - offset % 8, null, -1);
+  return {pieces, count:Math.ceil(offset / 8)};
+}
+
+function canvasEllipse(ctx, x, y, width, height, filled, tilt) {
+  ctx.beginPath();
+  ctx.ellipse(x, y, width, height, tilt, 0, 2 * Math.PI);
+  if (filled) ctx.fill();
+  else ctx.stroke();
+}
+
+function canvasRest(ctx, x, top, ticks, step) {
+  const line = top + 2 * step;
+  if (ticks >= 4) {
+    ctx.fillRect(x - 5, line + (ticks === 8 ? -step : -4), 10, 4);
+    return;
+  }
+  ctx.beginPath();
+  if (ticks === 1) {
+    canvasEllipse(ctx,x - 2,line - 4,2.2,2.2,true,0);
+    ctx.beginPath();
+    ctx.moveTo(x - 2,line - 3);
+    ctx.quadraticCurveTo(x + 1,line + 1,x + 4,line - 6);
+    ctx.lineTo(x - 2,line + 9);
+  } else {
+    ctx.moveTo(x - 3,line - 11);
+    ctx.lineTo(x + 3,line - 4);
+    ctx.lineTo(x - 2,line + 1);
+    ctx.bezierCurveTo(x - 8,line + 5,x + 6,line + 5,x + 3,line + 10);
+    ctx.quadraticCurveTo(x - 3,line + 6,x - 1,line + 13);
+  }
+  ctx.stroke();
+}
+
+function canvasClef(ctx, bass, x, top, step) {
+  ctx.fillStyle = '#27231e';
+  if (bass) {
+    ctx.beginPath();
+    ctx.moveTo(x + 1, top + 2.8 * step);
+    ctx.bezierCurveTo(x + 22, top + 1.4 * step, x + 12, top - 0.6 * step, x + 4, top + 0.75 * step);
+    ctx.stroke();
+    canvasEllipse(ctx,x + 5,top + step,3.2,3.2,true,0);
+    canvasEllipse(ctx,x + 18,top + step - 3,1.6,1.6,true,0);
+    canvasEllipse(ctx,x + 18,top + step + 3,1.6,1.6,true,0);
+    return;
+  }
+  ctx.beginPath();
+  ctx.lineWidth = 1.8;
+  ctx.moveTo(x + 2, top + 5.1 * step);
+  ctx.bezierCurveTo(x + 8, top + 5.9 * step, x + 16, top + 5.5 * step, x + 13, top + 4.3 * step);
+  ctx.bezierCurveTo(x + 9, top + 2.3 * step, x + 4, top - 0.5 * step, x + 11, top - 1.7 * step);
+  ctx.bezierCurveTo(x + 19, top - 0.8 * step, x + 13, top + 0.5 * step, x + 6, top + 1.6 * step);
+  ctx.bezierCurveTo(x - 13, top + 3.8 * step, x + 24, top + 4.8 * step, x + 17, top + 2.4 * step);
+  ctx.bezierCurveTo(x + 12, top + 1.5 * step, x + 2, top + 2.1 * step, x + 7, top + 3.1 * step);
+  ctx.stroke();
+  canvasEllipse(ctx,x + 2,top + 5 * step,2.3,2.8,true,-0.2);
+}
+
+function drawScore(notes, selected, playing, selectNote) {
+  const width = staffFrame.clientWidth;
+  if (!width || !notes.length) return;
+  const {pieces,count} = scorePieces(notes);
+  const step = 9;
+  const measuresPerRow = width >= 400 ? 2 : 1;
+  const sortedMidi = notes.filter(note => note.midi !== null).map(note => note.midi).sort((a,b) => a - b);
+  const bass = sortedMidi.length > 0 && sortedMidi[Math.floor(sortedMidi.length / 2)] < 57;
+  const base = diatonic(bass ? 43 : 64);
+  const staffSteps = sortedMidi.map(midi => diatonic(midi) - base);
+  const above = Math.max(0, Math.max(...staffSteps) - 8) * step / 2;
+  const below = Math.max(0, -Math.min(...staffSteps)) * step / 2;
+  const staffTop = 27 + above;
+  const rowHeight = 27 + above + 4 * step + below + 29;
+  const rows = Math.ceil(count / measuresPerRow);
+  const height = rows * rowHeight;
+  const ratio = Math.max(2, Math.min(3, window.devicePixelRatio || 1));
+  scoreCanvas.width = Math.round(width * ratio);
+  scoreCanvas.height = Math.round(height * ratio);
+  scoreCanvas.style.height = height + 'px';
+  const ctx = scoreCanvas.getContext('2d');
+  ctx.scale(ratio,ratio);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const left = 55;
+  const right = width - 11;
+  const barWidth = (right - left) / measuresPerRow;
+  const topAt = row => staffTop + row * rowHeight;
+  for (let row = 0; row < rows; row++) {
+    const top = topAt(row);
+    const barsHere = Math.min(measuresPerRow,count - row * measuresPerRow);
+    const end = left + barWidth * barsHere;
+    ctx.strokeStyle = '#877c6d';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    for (let line = 0; line < 5; line++) {
+      ctx.moveTo(10, top + step * line);
+      ctx.lineTo(end, top + step * line);
+    }
+    for (let bar = 1; bar <= barsHere; bar++) {
+      ctx.moveTo(left + barWidth * bar, top);
+      ctx.lineTo(left + barWidth * bar, top + 4 * step);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = '#27231e';
+    canvasClef(ctx, bass, 15, top, step);
+    if (row === 0) {
+      ctx.font = 'bold 17px Georgia';
+      ctx.fillText('4',39,top + step * 1.8);
+      ctx.fillText('4',39,top + step * 3.8);
+    }
+  }
+
+  const hitboxes = [];
+  let prev = null;
+  let lastBar = -1;
+  const accidentals = new Map();
+  for (const piece of pieces) {
+    const bar = Math.floor(piece.offset / 8);
+    const row = Math.floor(bar / measuresPerRow);
+    const x = left + (bar % measuresPerRow) * barWidth + 13 + (piece.offset % 8) * (barWidth - 19) / 8;
+    const top = topAt(row);
+    const midi = piece.midi;
+    const staffStep = midi === null ? 4 : diatonic(midi) - base;
+    const y = top + 4 * step - staffStep * step / 2;
+    if (bar !== lastBar) {
+      accidentals.clear();
+      lastBar = bar;
+    }
+    const active = piece.index !== -1 && (piece.index === playing || piece.index === selected);
+    ctx.fillStyle = ctx.strokeStyle = active ? '#28588a' : '#27231e';
+    ctx.lineWidth = 1.35;
+    if (midi === null) {
+      if (piece.index === -1) ctx.fillStyle = ctx.strokeStyle = '#9b9081';
+      canvasRest(ctx,x,top,piece.ticks,step);
+    } else {
+      const lineStart = staffStep < 0 ? -2 : 10;
+      const ledgerCount = staffStep < 0 ? Math.floor(-staffStep / 2) : Math.floor((staffStep - 8) / 2);
+      ctx.beginPath();
+      for (let n = 0; n < ledgerCount; n++) {
+        const lineY = top + 4 * step - (lineStart + n * (staffStep < 0 ? -2 : 2)) * step / 2;
+        ctx.moveTo(x - 9,lineY);
+        ctx.lineTo(x + 9,lineY);
+      }
+      ctx.stroke();
+      const sharp = PITCH_NAMES[midi % 12].includes('♯');
+      if (Boolean(accidentals.get(staffStep)) !== sharp && !(piece.continued && lastBar !== prev?.bar)) {
+        ctx.font = '15px system-ui, sans-serif';
+        ctx.fillText(sharp ? '♯' : '♮',x - 15,y + 5);
+      }
+      accidentals.set(staffStep,sharp);
+      canvasEllipse(ctx,x,y,piece.ticks === 8 ? 6 : 5,3.5,piece.ticks < 4,-0.24);
+      if (piece.ticks < 8) {
+        const up = staffStep <= 4;
+        const stemX = x + (up ? 4 : -4);
+        const edge = y + (up ? -26 : 26);
+        ctx.beginPath();
+        ctx.moveTo(stemX,y);
+        ctx.lineTo(stemX,edge);
+        if (piece.ticks === 1) {
+          ctx.bezierCurveTo(stemX + 1,edge + (up ? 8 : -8),stemX + 9,edge + (up ? 6 : -6),stemX + 7,edge + (up ? 14 : -14));
+        }
+        ctx.stroke();
+      }
+      if (piece.continued && prev?.row === row) {
+        ctx.beginPath();
+        ctx.moveTo(prev.x + 4,y + 6);
+        ctx.quadraticCurveTo((prev.x + x) / 2,y + 15,x - 4,y + 6);
+        ctx.stroke();
+      } else if (piece.continued && prev) {
+        ctx.beginPath();
+        ctx.moveTo(left - 6,y + 8);
+        ctx.quadraticCurveTo(left + 3,y + 12,x - 4,y + 6);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(prev.x + 4,prev.y + 6);
+        ctx.quadraticCurveTo((prev.x + right) / 2,prev.y + 14,right - 2,prev.y + 8);
+        ctx.stroke();
+      }
+    }
+    if (piece.index !== -1) {
+      hitboxes.push({x,y,index:piece.index,continued:piece.continued});
+    }
+    prev = {x,y,row,bar};
+  }
+  let previousTarget = null;
+  const targets = hitboxes.map(hit => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'notetarget';
+    button.style.left = hit.x + 'px';
+    button.style.top = hit.y + 'px';
+    button.style.width = Math.min(31,(barWidth - 19) / 8 + 5) + 'px';
+    button.tabIndex = hit.continued ? -1 : 0;
+    button.dataset.noteIndex = hit.index;
+    const label = '第 ' + (hit.index + 1) + ' 个音符，' + noteName(notes[hit.index].midi);
+    button.setAttribute('aria-label',hit.continued ? label + '，延续' : label);
+    button.setAttribute('aria-pressed', String(hit.index === selected));
+    button.addEventListener('click',() => selectNote(hit.index));
+    if (hit.index === selected && !hit.continued) previousTarget = button;
+    return button;
+  });
+  const restoreFocus = ui('targets').contains(document.activeElement);
+  ui('targets').replaceChildren(...targets);
+  if (restoreFocus && previousTarget) previousTarget.focus({preventScroll:true});
+}
+</script>
+<!-- Versilian Steinway B, Versilian Community Sample Library (CC0 1.0).
+     Close microphones, no sustain pedal, StaPiano mono AAC medium layer (v2).
+     Original library: https://versilian-studios.com/vcsl/
+     Exact recordings and source hashes: https://github.com/sisyphunky/music-reading-practice/blob/main/assets/steinway-b/manifest.json
+     CC0: https://creativecommons.org/publicdomain/zero/1.0/
+-->
+<script id="application">
+const MAX_SECONDS = 45;
+const PIANO_PREVIEW_SECONDS = 0.90;
+const PIANO_RELEASE_SECONDS = 0.07;
+const pianoBuffers = new Map();
+const formatClock = seconds => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2,'0');
+
+let mode = 'free';
+let phase = 'idle';
+let project = null;
+let selected = -1;
+let playing = -1;
+let history = [];
+let audioContext = null;
+let audioBuffer = null;
+let playback = null;
+let playbackRequest = 0;
+let capture = null;
+let countdownVersion = 0;
+let recordedTake = null;
+let dbRequest = null;
+
+function message(text, kind = '') {
+  const element = ui('notice');
+  element.textContent = text;
+  element.dataset.kind = kind;
+}
+
+function setPhase(next, beatText = '') {
+  phase = next;
+  const recording = phase === 'recording';
+  const counting = phase === 'counting';
+  const idle = phase === 'idle';
+  ui('recorder').classList.toggle('recording',recording);
+  ui('recordButton').disabled = !idle && !recording && !counting;
+  ui('recordText').textContent = ({
+    idle:'开始录音', opening:'正在打开麦克风', counting:'取消预备', recording:'停止并识谱', analyzing:'正在识别旋律'
+  })[phase];
+  ui('beat').textContent = beatText || (idle ? (mode === 'free' ? '在安静处哼 5–10 秒' : '4/4 拍 · 先数四拍，再哼唱') : '');
+  for (const id of ['freeMode','beatMode','speed','importButton','exampleButton','libraryButton']) ui(id).disabled = !idle;
+  for (const id of ['playOriginal','playPiano','saveButton','printButton']) ui(id).disabled = !idle || (id === 'playOriginal' && !audioBuffer);
+}
+
+function changeMode(next) {
+  if (phase !== 'idle') return;
+  mode = next;
+  ui('speedBox').hidden = mode !== 'beat';
+  ui('freeMode').setAttribute('aria-pressed',String(mode === 'free'));
+  ui('beatMode').setAttribute('aria-pressed',String(mode === 'beat'));
+  setPhase('idle');
+}
+
+async function context() {
+  if (!audioContext) {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) throw Error('这个浏览器暂时不能播放或分析录音。');
+    audioContext = new Audio();
+  }
+  if (audioContext.state !== 'running') await audioContext.resume();
+  return audioContext;
+}
+
+function unhighlight() {
+  if (playing === -1) return;
+  playing = -1;
+  redrawNotation();
+}
+
+function stopPlayback() {
+  playbackRequest++;
+  const before = playback;
+  playback = null;
+  if (before) {
+    cancelAnimationFrame(before.frame);
+    for (const source of before.sources) {
+      try { source.stop(); } catch {}
+    }
+  }
+  unhighlight();
+  updatePlayButtons();
+}
+
+function updatePlayButtons() {
+  const originals = playback?.type === 'original' || playback?.type === 'clip';
+  const piano = playback?.type === 'piano';
+  ui('playOriginal').textContent = (originals ? '■' : '▷') + ' 原始哼唱';
+  ui('playPiano').textContent = (piano ? '■' : '▷') + ' 钢琴复奏';
+  ui('playOriginal').setAttribute('aria-pressed',String(originals));
+  ui('playPiano').setAttribute('aria-pressed',String(piano));
+}
+
+async function loadPianoNote(ctx, midi) {
+  const sourceMidi = midi - midi % 2;
+  if (!pianoBuffers.has(sourceMidi)) {
+    const sample = '../assets/steinway-b/' + sourceMidi + '.m4a';
+    const decoded = fetch(sample).then(response => {
+      if (!response.ok) throw Error('钢琴采样加载失败');
+      return response.arrayBuffer();
+    }).then(bytes => ctx.decodeAudioData(bytes)).then(buffer => {
+      const pcm = buffer.getChannelData(0);
+      const bodyFrames = Math.min(pcm.length, Math.floor(0.70 * buffer.sampleRate));
+      const frames = Math.min(pcm.length, Math.floor(PIANO_PREVIEW_SECONDS * buffer.sampleRate));
+      let energy = 0;
+      let peak = 0;
+      for (let i = 0; i < frames; i++) {
+        if (i < bodyFrames) energy += pcm[i] * pcm[i];
+        peak = Math.max(peak, Math.abs(pcm[i]));
+      }
+      const gain = Math.min(0.075 / Math.sqrt(energy / bodyFrames), 0.90 / peak);
+      return {buffer, gain};
+    }).catch(() => {
+      pianoBuffers.delete(sourceMidi);
+      throw Error('钢琴采样加载失败。请确认网络连接，然后再试一次。');
+    });
+    pianoBuffers.set(sourceMidi, decoded);
+  }
+  const note = await pianoBuffers.get(sourceMidi);
+  return {...note, rate:2 ** ((midi - sourceMidi) / 12)};
+}
+
+function pianoNote(ctx, note, time, duration) {
+  const source = ctx.createBufferSource();
+  const envelope = ctx.createGain();
+  const length = Math.min(duration, note.buffer.duration / note.rate);
+  const end = time + length;
+  const release = Math.min(PIANO_RELEASE_SECONDS, length / 3);
+  source.buffer = note.buffer;
+  source.playbackRate.value = note.rate;
+  envelope.gain.setValueAtTime(0, time);
+  envelope.gain.linearRampToValueAtTime(note.gain, time + Math.min(0.003, length / 3));
+  envelope.gain.setValueAtTime(note.gain, end - release);
+  envelope.gain.linearRampToValueAtTime(0, end);
+  source.connect(envelope).connect(ctx.destination);
+  source.onended = () => { source.disconnect(); envelope.disconnect(); };
+  source.start(time);
+  source.stop(end);
+  return source;
+}
+
+function playTimeline(session, ctx) {
+  playback = session;
+  updatePlayButtons();
+  const tick = () => {
+    if (playback !== session) return;
+    const elapsed = ctx.currentTime - session.start;
+    if (elapsed > session.duration + 0.045) {
+      stopPlayback();
+      return;
+    }
+    const index = session.events.find(item => elapsed >= item.from && elapsed < item.to)?.index ?? -1;
+    if (index !== playing) {
+      playing = index;
+      redrawNotation();
+    }
+    session.frame = requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+async function playPiano() {
+  if (playback?.type === 'piano') { stopPlayback(); return; }
+  stopPlayback();
+  const request = playbackRequest;
+  const take = project;
+  if (!take || phase !== 'idle') return;
+  try {
+    const ctx = await context();
+    const pitches = [...new Set(take.notes.map(note => note.midi).filter(midi => midi !== null))];
+    const entries = await Promise.all(pitches.map(async midi => [midi, await loadPianoNote(ctx, midi)]));
+    if (request !== playbackRequest) return;
+    const recordings = new Map(entries);
+    const tickLength = 30 / take.bpm;
+    const start = ctx.currentTime + 0.035;
+    const events = [];
+    const sources = [];
+    let elapsed = 0;
+    for (const [index, note] of take.notes.entries()) {
+      const duration = note.ticks * tickLength;
+      events.push({index,from:elapsed,to:elapsed + duration});
+      if (note.midi !== null) sources.push(pianoNote(ctx,recordings.get(note.midi),start + elapsed,duration * 0.95));
+      elapsed += duration;
+    }
+    playTimeline({type:'piano',start,events,sources,duration:elapsed},ctx);
+  } catch (error) {
+    if (request === playbackRequest) message(error.message,'warn');
+  }
+}
+
+async function playOriginal(clip = null) {
+  if (!audioBuffer || phase !== 'idle') return;
+  const type = clip ? 'clip' : 'original';
+  if (playback?.type === type) { stopPlayback(); return; }
+  stopPlayback();
+  const request = playbackRequest;
+  try {
+    const ctx = await context();
+    if (request !== playbackRequest || !audioBuffer || !project || phase !== 'idle') return;
+    const start = ctx.currentTime + 0.025;
+    const from = clip ? Math.max(0,clip.from - 0.035) : 0;
+    const to = clip ? Math.min(audioBuffer.duration,clip.to + 0.035) : audioBuffer.duration;
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+    source.onended = () => source.disconnect();
+    source.start(start,from,to - from);
+    const events = project.notes.filter(note => Number.isFinite(note.from)).map(note => ({
+      from:note.from - from, to:note.to - from,index:project.notes.indexOf(note)
+    }));
+    playTimeline({type,start,events,sources:[source],duration:to - from},ctx);
+  } catch (error) {
+    if (request === playbackRequest) message(error.message,'warn');
+  }
+}
+
+async function previewKey(midi) {
+  if (midi === null || phase !== 'idle') return;
+  stopPlayback();
+  const request = playbackRequest;
+  try {
+    const ctx = await context();
+    const note = await loadPianoNote(ctx,midi);
+    if (request !== playbackRequest) return;
+    const start = ctx.currentTime + 0.02;
+    const source = pianoNote(ctx,note,start,PIANO_PREVIEW_SECONDS);
+    playTimeline({type:'note',start,events:[],sources:[source],duration:PIANO_PREVIEW_SECONDS},ctx);
+  } catch (error) {
+    if (request === playbackRequest) message(error.message,'warn');
+  }
+}
+
+function redrawNotation() {
+  if (project) drawScore(project.notes,selected,playing,index => {
+    stopPlayback();
+    selected = index;
+    redrawNotation();
+    renderEditor();
+    previewKey(project.notes[index].midi);
+  });
+}
+
+function buildKeyboard(midi) {
+  const white = [0,2,4,5,7,9,11];
+  const black = [{step:1,left:1},{step:3,left:2},{step:6,left:4},{step:8,left:5},{step:10,left:6}];
+  const octave = Math.floor((midi ?? 60) / 12) * 12;
+  const newKey = (offset, dark, boundary = null) => {
+    const key = document.createElement('button');
+    const keyMidi = octave + offset;
+    const name = noteName(keyMidi);
+    key.type = 'button';
+    key.className = 'key' + (dark ? ' black' : '') + (midi === keyMidi ? ' current' : '');
+    key.setAttribute('aria-label','试听 '+name);
+    key.textContent = offset === 0 ? name : PITCH_NAMES[offset];
+    if (boundary !== null) key.style.left = (boundary * (100 / 7) - 4.4) + '%';
+    key.addEventListener('click',() => previewKey(keyMidi));
+    return key;
+  };
+  ui('keys').replaceChildren(...white.map(step => newKey(step,false)),...black.map(item => newKey(item.step,true,item.left)));
+}
+
+function renderEditor() {
+  const note = project?.notes[selected];
+  ui('editor').hidden = !note;
+  if (!note) return;
+  const pitched = project.notes.filter(item => item.midi !== null).length;
+  ui('chosenName').textContent = noteName(note.midi);
+  ui('chosenDuration').textContent = note.ticks / 2 + ' 拍';
+  ui('clipButton').hidden = !audioBuffer || !Number.isFinite(note.from) || note.from >= note.to;
+  ui('keys').hidden = note.midi === null;
+  if (note.midi !== null) buildKeyboard(note.midi);
+  ui('down').disabled = note.midi === null || note.midi <= 35;
+  ui('up').disabled = note.midi === null || note.midi >= 89;
+  ui('shorten').disabled = note.ticks <= 1;
+  ui('lengthen').disabled = note.ticks >= 32;
+  ui('split').disabled = note.ticks <= 1;
+  ui('merge').disabled = project.notes[selected + 1]?.midi !== note.midi;
+  ui('rest').textContent = note.midi === null ? '还原为音符' : '改为休止';
+  ui('rest').disabled = note.midi === null ? note.previousMidi === undefined : pitched === 1;
+  ui('remove').disabled = note.midi !== null && pitched === 1;
+}
+
+function render() {
+  ui('project').hidden = !project;
+  if (!project) return;
+  const pitched = project.notes.filter(note => note.midi !== null).length;
+  ui('scoreTitle').textContent = project.name || '旋律草谱';
+  ui('summary').textContent = '4/4 拍 · ' + project.bpm + ' 拍/分 · ' + pitched + ' 个音' + (project.estimated ? ' · 估计速度' : '');
+  ui('undoButton').disabled = history.length === 0;
+  ui('downloadButton').hidden = !recordedTake;
+  ui('saveButton').textContent = project.id ? '保存修改' : '保存旋律';
+  renderEditor();
+  redrawNotation();
+  updatePlayButtons();
+}
+
+function edit(action) {
+  if (phase !== 'idle' || !project?.notes[selected]) return;
+  stopPlayback();
+  history.push({notes:project.notes.map(note => ({...note})),selected});
+  if (history.length > 50) history.shift();
+  const note = project.notes[selected];
+  if (action === 'up' || action === 'down') note.midi += action === 'up' ? 1 : -1;
+  if (action === 'lengthen' || action === 'shorten') note.ticks += action === 'lengthen' ? 1 : -1;
+  if (action === 'rest') {
+    if (note.midi === null) note.midi = note.previousMidi;
+    else { note.previousMidi = note.midi; note.midi = null; }
+  }
+  if (action === 'remove') {
+    project.notes.splice(selected,1);
+    selected = Math.min(selected,project.notes.length - 1);
+  }
+  if (action === 'split') {
+    const first = Math.floor(note.ticks / 2);
+    const cut = note.from + (note.to - note.from) * first / note.ticks;
+    project.notes.splice(selected,1,
+      {...note,ticks:first,to:cut},
+      {...note,ticks:note.ticks - first,from:cut}
+    );
+  }
+  if (action === 'merge') {
+    const after = project.notes[selected + 1];
+    note.ticks += after.ticks;
+    note.to = after.to;
+    project.notes.splice(selected + 1,1);
+  }
+  render();
+  if (action === 'up' || action === 'down') previewKey(note.midi);
+}
+
+function undo() {
+  if (!history.length || phase !== 'idle') return;
+  stopPlayback();
+  const before = history.pop();
+  project.notes = before.notes;
+  selected = before.selected;
+  render();
+}
+
+async function analyzeBlob(blob, {bpm = null, name = null, example = false} = {}) {
+  stopPlayback();
+  setPhase('analyzing','正在找音高、时值和停顿');
+  message('');
+  try {
+    const ctx = await context();
+    const buffer = await ctx.decodeAudioData(await blob.arrayBuffer());
+    if (buffer.duration > MAX_SECONDS + 0.5) throw Error('这段录音超过 45 秒。请截取想写下来的短句后再试。');
+    let channel = buffer.getChannelData(0);
+    if (buffer.numberOfChannels > 1) {
+      const second = buffer.getChannelData(1);
+      const mix = new Float32Array(channel.length);
+      for (let i = 0; i < mix.length; i++) mix[i] = (channel[i] + second[i]) / 2;
+      channel = mix;
+    }
+    await new Promise(resolve => setTimeout(resolve,25));
+    const raw = detectMelody(channel,buffer.sampleRate);
+    if (!raw.length) throw Error('这段里没有听清稳定的音。可以靠近麦克风，先试着哼一两个清楚的音。');
+    const tempo = bpm || pickTempo(raw);
+    const notes = toScore(raw,tempo);
+    if (bpm && !example) {
+      const lead = Math.round(raw[0].from * tempo / 30);
+      if (lead > 0) notes.unshift({midi:null,ticks:lead,from:0,to:raw[0].from});
+    }
+    project = {id:null,name,bpm:tempo,estimated:!bpm,notes};
+    recordedTake = blob;
+    audioBuffer = buffer;
+    selected = -1;
+    history = [];
+    message(example ? '已载入示例。点谱面音符可以试听和找琴键。' : '草谱已生成。可以先对照回听，再点谱改音。');
+  } catch (error) {
+    const detail = error.name === 'EncodingError' ? '打不开这段录音。可以换一段 WAV、M4A 或 MP3 再试。' : error.message;
+    message(detail || '识别时遇到问题，请重新录一小句。','warn');
+  } finally {
+    setPhase('idle');
+    render();
+  }
+}
+
+function preferredFormat() {
+  const formats = ['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'];
+  return formats.find(type => MediaRecorder.isTypeSupported?.(type));
+}
+
+function releaseCapture(session) {
+  clearInterval(session.clock);
+  session.stream.getTracks().forEach(track => track.stop());
+  session.meter?.disconnect();
+  session.input?.disconnect();
+  ui('recorder').style.removeProperty('--level');
+}
+
+function stopCapture() {
+  if (!capture || capture.writer.state === 'inactive') return;
+  setPhase('analyzing','正在整理录音');
+  capture.writer.stop();
+  clearInterval(capture.clock);
+}
+
+function startCapture(session) {
+  const {writer,ctx,tempo} = session;
+  try {
+    writer.start();
+  } catch {
+    releaseCapture(session);
+    capture = null;
+    setPhase('idle');
+    message('麦克风已打开，但浏览器没能开始录音。可以重试，或用「打开录音」导入。','warn');
+    return;
+  }
+  const start = ctx.currentTime;
+  const waveform = new Uint8Array(session.meter.fftSize);
+  setPhase('recording','正在录音 · 0:00');
+  session.clock = setInterval(() => {
+    const seconds = ctx.currentTime - start;
+    const beat = tempo ? '第 ' + (Math.floor(seconds * tempo / 60) % 4 + 1) + ' 拍 · ' : '正在录音 · ';
+    ui('beat').textContent = beat + formatClock(seconds);
+    session.meter.getByteTimeDomainData(waveform);
+    const amplitude = Math.max(...waveform) - Math.min(...waveform);
+    ui('recorder').style.setProperty('--level',clamp(0.55 + amplitude / 75,0.55,1.45));
+    if (seconds >= MAX_SECONDS) stopCapture();
+  },70);
+}
+
+async function startRecording() {
+  const tempo = mode === 'beat' ? clamp(Number(ui('speed').value) || EXAMPLE_TEMPO,45,180) : null;
+  if (tempo) ui('speed').value = tempo;
+  stopPlayback();
+  message('');
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    message('这个页面无法直接使用麦克风。请把 HTML 下载后用浏览器独立打开，或用「打开录音」导入语音备忘录。','warn');
+    return;
+  }
+  setPhase('opening','等待麦克风授权');
+  let stream = null;
+  let session = null;
+  try {
+    const ctx = await context();
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+    const format = preferredFormat();
+    const writer = format ? new MediaRecorder(stream,{mimeType:format}) : new MediaRecorder(stream);
+    session = {stream,ctx,writer,tempo,chunks:[]};
+    capture = session;
+    session.input = ctx.createMediaStreamSource(stream);
+    session.meter = ctx.createAnalyser();
+    session.meter.fftSize = 256;
+    session.input.connect(session.meter);
+    writer.addEventListener('dataavailable',event => { if (event.data.size) session.chunks.push(event.data); });
+    writer.addEventListener('error',() => {
+      session.failed = true;
+      releaseCapture(session);
+      if (capture === session) capture = null;
+      setPhase('idle');
+      message('录音中断了。请重试，或用「打开录音」导入。','warn');
+    });
+    writer.addEventListener('stop',() => {
+      releaseCapture(session);
+      if (capture === session) capture = null;
+      if (session.failed) return;
+      const blob = new Blob(session.chunks,{type:writer.mimeType || session.chunks[0]?.type || 'audio/webm'});
+      if (blob.size) analyzeBlob(blob,{bpm:tempo});
+      else { setPhase('idle'); message('这次没有录到声音，请再试一次。','warn'); }
+    });
+    if (!tempo) { startCapture(session); return; }
+    const version = ++countdownVersion;
+    setPhase('counting','预备 · 1 / 4');
+    for (let count = 1; count <= 4; count++) {
+      if (version !== countdownVersion) return;
+      ui('beat').textContent = '预备 · ' + count + ' / 4';
+      await new Promise(resolve => setTimeout(resolve,60000 / tempo));
+    }
+    if (version === countdownVersion) startCapture(session);
+  } catch (error) {
+    if (session) releaseCapture(session);
+    else stream?.getTracks().forEach(track => track.stop());
+    capture = null;
+    setPhase('idle');
+    const detail = error.name === 'NotAllowedError'
+      ? '麦克风未授权。可以检查浏览器权限，或用「打开录音」导入语音备忘录。'
+      : '打开麦克风失败。请检查输入设备，或改用「打开录音」。';
+    message(detail,'warn');
+  }
+}
+
+function useRecordButton() {
+  if (phase === 'idle') startRecording();
+  if (phase === 'recording') stopCapture();
+  if (phase === 'counting') {
+    countdownVersion++;
+    releaseCapture(capture);
+    capture = null;
+    setPhase('idle');
+  }
+}
+
+function database() {
+  if (!dbRequest) {
+    dbRequest = new Promise((resolve,reject) => {
+      const request = indexedDB.open('humming-score-v1',1);
+      request.onupgradeneeded = () => request.result.createObjectStore('melodies',{keyPath:'id'});
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => reject(Error('另一个页面正在使用旋律记录。'));
+    }).catch(error => { dbRequest = null; throw error; });
+  }
+  return dbRequest;
+}
+
+async function databaseAction(mode, action) {
+  const db = await database();
+  return new Promise((resolve,reject) => {
+    const transaction = db.transaction('melodies',mode);
+    const request = action(transaction.objectStore('melodies'));
+    transaction.oncomplete = () => resolve(request.result);
+    transaction.onabort = () => reject(transaction.error || request.error || Error('没有完成这次操作。'));
+    transaction.onerror = () => reject(transaction.error || request.error);
+  });
+}
+
+function defaultName() {
+  const now = new Date();
+  return now.toLocaleDateString('zh-CN',{month:'numeric',day:'numeric'}) + ' ' +
+    now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false}) + ' 的旋律';
+}
+
+function openSave() {
+  if (!project || phase !== 'idle') return;
+  stopPlayback();
+  ui('name').value = project.name || defaultName();
+  ui('keepLabel').hidden = !recordedTake;
+  ui('keepAudio').checked = project.keepAudio ?? true;
+  ui('saveDialog').showModal();
+}
+
+async function save(event) {
+  event.preventDefault();
+  const name = ui('name').value.trim();
+  if (!name || !project || ui('commitButton').disabled) return;
+  const keepAudio = ui('keepAudio').checked && Boolean(recordedTake);
+  const item = {
+    ...project,name,keepAudio, audio:keepAudio ? recordedTake : null,
+    id:project.id || (crypto.randomUUID?.() || Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)),
+    updated:Date.now()
+  };
+  ui('commitButton').disabled = true;
+  try {
+    await databaseAction('readwrite',store => store.put(item));
+    project.id = item.id;
+    project.name = item.name;
+    project.keepAudio = keepAudio;
+    ui('saveDialog').close();
+    render();
+    message(keepAudio ? '已保存五线谱和原录音。' : '已保存五线谱。');
+  } catch {
+    ui('saveDialog').close();
+    message('浏览器没有保存这条旋律。可先下载录音、打印或存为 PDF。','warn');
+  } finally {
+    ui('commitButton').disabled = false;
+  }
+}
+
+async function openSaved(item) {
+  stopPlayback();
+  let buffer = null;
+  if (item.audio) {
+    try {
+      const ctx = await context();
+      buffer = await ctx.decodeAudioData(await item.audio.arrayBuffer());
+    } catch {
+      message('已打开五线谱。这段原录音暂时无法回放，仍可下载。','warn');
+    }
+  }
+  const {audio, ...details} = item;
+  recordedTake = audio;
+  audioBuffer = buffer;
+  project = details;
+  selected = -1;
+  history = [];
+  ui('libraryDialog').close();
+  if (!audio || buffer) message('');
+  setPhase('idle');
+  render();
+}
+
+function renameSaved(item, name) {
+  return databaseAction('readwrite',store => {
+    const request = store.get(item.id);
+    request.onsuccess = () => {
+      if (request.result) store.put({...request.result,name,updated:Date.now()});
+    };
+    return request;
+  });
+}
+
+async function refreshSaved() {
+  const list = ui('savedList');
+  try {
+    const items = await databaseAction('readonly',store => store.getAll());
+    items.sort((a,b) => b.updated - a.updated);
+    list.replaceChildren();
+    if (!items.length) {
+      const empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '保存的旋律会显示在这里。';
+      list.append(empty);
+    }
+    for (const item of items) {
+      const row = document.createElement('div');
+      row.className = 'saved-row';
+      const desc = document.createElement('div');
+      desc.className = 'grow';
+      const title = document.createElement('strong');
+      title.textContent = item.name;
+      const date = document.createElement('small');
+      date.textContent = new Date(item.updated).toLocaleDateString('zh-CN') + (item.audio ? ' · 有原录音' : '');
+      desc.append(title,date);
+      const buttons = [
+        {label:'打开', run:() => openSaved(item)},
+        {label:'改名', run:async () => {
+          const name = window.prompt('旋律名称',item.name)?.trim().slice(0,55);
+          if (!name || name === item.name) return;
+          await renameSaved(item,name);
+          if (project?.id === item.id) { project.name = name; render(); }
+          await refreshSaved();
+        }},
+        {label:'删除', run:async () => {
+          if (!window.confirm('删除「' + item.name + '」和它保存的原录音？')) return;
+          await databaseAction('readwrite',store => store.delete(item.id));
+          if (project?.id === item.id) { project.id = null; render(); }
+          await refreshSaved();
+        }}
+      ];
+      row.append(desc);
+      for (const {label,run} of buttons) {
+        const button = document.createElement('button');
+        button.className = 'btn';
+        button.type = 'button';
+        button.textContent = label;
+        button.addEventListener('click',async () => {
+          button.disabled = true;
+          try { await run(); }
+          catch { list.prepend(Object.assign(document.createElement('p'),{textContent:'这次操作没有完成，可以再试一次。'})); }
+          finally { button.disabled = false; }
+        });
+        row.append(button);
+      }
+      list.append(row);
+    }
+  } catch {
+    list.textContent = '这个浏览器暂时无法读取本地保存的旋律。';
+  }
+}
+
+function downloadAudio() {
+  if (!recordedTake) return;
+  const type = recordedTake.type.toLowerCase();
+  const ext = type.includes('wav') ? 'wav' : type.includes('webm') ? 'webm' :
+    type.includes('ogg') ? 'ogg' : type.includes('mpeg') ? 'mp3' :
+    type.includes('mp4') || type.includes('m4a') ? 'm4a' : (recordedTake.name?.split('.').at(-1) || 'audio');
+  const href = URL.createObjectURL(recordedTake);
+  const link = document.createElement('a');
+  link.href = href;
+  const safeName = (project.name || '哼唱录音').replace(/[<>:"/\\|?*]/g,'_');
+  link.download = safeName + '.' + ext;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(href),1500);
+}
+
+ui('freeMode').addEventListener('click',() => changeMode('free'));
+ui('beatMode').addEventListener('click',() => changeMode('beat'));
+ui('recordButton').addEventListener('click',useRecordButton);
+ui('importButton').addEventListener('click',() => ui('audioFile').click());
+ui('audioFile').addEventListener('change',event => {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (file && phase === 'idle') analyzeBlob(file);
+});
+ui('exampleButton').addEventListener('click',() => {
+  if (phase !== 'idle') return;
+  const {samples,sampleRate} = makeExample();
+  const blob = new Blob([arraysToWav(samples,sampleRate)],{type:'audio/wav'});
+  analyzeBlob(blob,{bpm:120,example:true,name:'示例旋律'});
+});
+ui('playPiano').addEventListener('click',playPiano);
+ui('playOriginal').addEventListener('click',() => playOriginal());
+ui('clipButton').addEventListener('click',() => playOriginal(project.notes[selected]));
+ui('undoButton').addEventListener('click',undo);
+for (const action of ['up','down','lengthen','shorten','split','merge','remove','rest'])
+  ui(action).addEventListener('click',() => edit(action));
+ui('saveButton').addEventListener('click',openSave);
+ui('cancelSave').addEventListener('click',() => ui('saveDialog').close());
+ui('saveForm').addEventListener('submit',save);
+ui('libraryButton').addEventListener('click',() => {
+  stopPlayback();
+  if (phase !== 'idle') return;
+  ui('libraryDialog').showModal();
+  refreshSaved();
+});
+ui('closeLibrary').addEventListener('click',() => ui('libraryDialog').close());
+ui('downloadButton').addEventListener('click',downloadAudio);
+ui('printButton').addEventListener('click',() => { stopPlayback(); window.print(); });
+window.addEventListener('resize',redrawNotation);
+window.addEventListener('pagehide',() => {
+  if (capture) {
+    capture.failed = true;
+    if (capture.writer.state !== 'inactive') capture.writer.stop();
+    releaseCapture(capture);
+  }
+  stopPlayback();
+});
+setPhase('idle');
+</script>
+</body>
+</html>
